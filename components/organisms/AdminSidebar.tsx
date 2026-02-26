@@ -1,12 +1,14 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/lib/supabase/client';
 import { useState, useEffect } from 'react';
 
 const SHOP_NAME = process.env.NEXT_PUBLIC_SHOP_NAME || 'Electronics Catalog';
+const SHOP_LOGO_URL = process.env.NEXT_PUBLIC_SHOP_LOGO_URL || '';
 
 const navItems = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
@@ -73,8 +75,11 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
         )}
       >
         <div className="flex h-16 items-center justify-between px-4 border-b border-gray-200">
-          <Link href="/" className="text-lg font-bold text-brand-700 hover:text-brand-800" onClick={onClose}>
-            {SHOP_NAME}
+          <Link href="/" className="flex items-center gap-2 hover:text-brand-800" onClick={onClose}>
+            {SHOP_LOGO_URL ? (
+              <Image src={SHOP_LOGO_URL} alt={SHOP_NAME} width={100} height={36} className="h-9 w-auto object-contain" />
+            ) : null}
+            <span className="text-lg font-bold text-brand-700">{SHOP_NAME}</span>
           </Link>
           <button onClick={onClose} className="lg:hidden text-gray-400 hover:text-gray-600">
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -95,7 +100,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
               onClick={onClose}
               className={cn(
                 'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
-                pathname.startsWith(item.href)
+                pathname?.startsWith(item.href)
                   ? 'bg-brand-50 text-brand-700'
                   : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
               )}

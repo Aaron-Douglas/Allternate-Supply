@@ -1,7 +1,9 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 
 const SHOP_NAME = process.env.NEXT_PUBLIC_SHOP_NAME || 'Electronics Catalog';
+const SHOP_LOGO_URL = process.env.NEXT_PUBLIC_SHOP_LOGO_URL || '';
 const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '';
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
@@ -14,7 +16,12 @@ export default async function PublicLayout({ children }: { children: React.React
       <header className="hidden lg:block border-b border-gray-200 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
-            <Link href="/" className="text-xl font-bold text-brand-700">{SHOP_NAME}</Link>
+            <Link href="/" className="flex items-center gap-2">
+              {SHOP_LOGO_URL ? (
+                <Image src={SHOP_LOGO_URL} alt={SHOP_NAME} width={120} height={40} className="h-10 w-auto object-contain" />
+              ) : null}
+              <span className="text-xl font-bold text-brand-700">{SHOP_NAME}</span>
+            </Link>
             <nav className="flex items-center gap-6">
               <Link href="/" className="text-sm font-medium text-gray-700 hover:text-brand-600">Home</Link>
               <Link href="/sold" className="text-sm font-medium text-gray-700 hover:text-brand-600">Recently Sold</Link>
@@ -31,7 +38,12 @@ export default async function PublicLayout({ children }: { children: React.React
       {/* Mobile top bar */}
       <header className="lg:hidden border-b border-gray-200 bg-white">
         <div className="flex h-14 items-center justify-between px-4">
-          <Link href="/" className="text-lg font-bold text-brand-700">{SHOP_NAME}</Link>
+          <Link href="/" className="flex items-center gap-2">
+            {SHOP_LOGO_URL ? (
+              <Image src={SHOP_LOGO_URL} alt={SHOP_NAME} width={96} height={32} className="h-8 w-auto object-contain" />
+            ) : null}
+            <span className="text-lg font-bold text-brand-700">{SHOP_NAME}</span>
+          </Link>
           {user && (
             <Link href="/admin/dashboard" className="text-sm font-medium text-brand-600">Admin</Link>
           )}

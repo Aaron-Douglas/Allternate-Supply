@@ -25,18 +25,23 @@ function formatAuditDate(iso: string | null | undefined): string {
 export default function EditItemPage() {
   const router = useRouter();
   const params = useParams();
+  const id = typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : null;
   const [item, setItem] = useState<InventoryItemWithPhotos | null>(null);
   const [staffNames, setStaffNames] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
 
   useEffect(() => {
+    if (!id) {
+      setIsFetching(false);
+      return;
+    }
     const fetchItem = async () => {
       const supabase = createClient();
       const { data } = await supabase
         .from('inventory_items')
         .select('*, item_photos(*)')
-        .eq('id', params.id as string)
+        .eq('id', id)
         .single();
 
       if (data) {
@@ -63,14 +68,15 @@ export default function EditItemPage() {
       setIsFetching(false);
     };
     fetchItem();
-  }, [params.id]);
+  }, [id]);
 
   const handlePhotosUpdated = useCallback(async () => {
+    if (!id) return;
     const supabase = createClient();
     const { data } = await supabase
       .from('inventory_items')
       .select('*, item_photos(*)')
-      .eq('id', params.id as string)
+      .eq('id', id)
       .single();
 
     if (data) {
@@ -79,12 +85,13 @@ export default function EditItemPage() {
       );
       setItem({ ...data, item_photos: itemPhotos } as InventoryItemWithPhotos);
     }
-  }, [params.id]);
+  }, [id]);
 
   const handleSubmit = async (data: ItemFormData) => {
+    if (!id) return;
     setIsLoading(true);
     try {
-      await updateItem(params.id as string, data);
+      await updateItem(id, data);
       router.push('/admin/inventory');
       router.refresh();
     } catch (error) {

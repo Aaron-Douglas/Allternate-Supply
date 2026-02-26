@@ -12,30 +12,36 @@ import type { InventoryItem } from '@/types/inventory';
 export default function RecordSalePage() {
   const router = useRouter();
   const params = useParams();
+  const id = typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : null;
   const [item, setItem] = useState<InventoryItem | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
 
   useEffect(() => {
+    if (!id) {
+      setIsFetching(false);
+      return;
+    }
     const fetchItem = async () => {
       const supabase = createClient();
       const { data } = await supabase
         .from('inventory_items')
         .select('*')
-        .eq('id', params.id as string)
+        .eq('id', id)
         .single();
 
       setItem(data as InventoryItem | null);
       setIsFetching(false);
     };
     fetchItem();
-  }, [params.id]);
+  }, [id]);
 
   const handleSubmit = async (data: SaleFormData) => {
+    if (!id) return;
     setIsLoading(true);
     try {
       const result = await createSale({
-        itemId: params.id as string,
+        itemId: id,
         ...data,
       });
       alert(`Sale recorded! Receipt: ${result.receiptNumber}`);

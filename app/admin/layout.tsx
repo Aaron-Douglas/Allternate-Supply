@@ -2,10 +2,12 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { AdminSidebar } from '@/components/organisms/AdminSidebar';
 
 const SHOP_NAME = process.env.NEXT_PUBLIC_SHOP_NAME || 'Electronics Catalog';
+const SHOP_LOGO_URL = process.env.NEXT_PUBLIC_SHOP_LOGO_URL || '';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -30,7 +32,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
             </svg>
           </button>
-          <Link href="/" className="text-lg font-bold text-brand-700 hover:text-brand-800">
+          <Link href="/" className="flex items-center gap-2 text-lg font-bold text-brand-700 hover:text-brand-800">
+            {SHOP_LOGO_URL ? (
+              <Image src={SHOP_LOGO_URL} alt={SHOP_NAME} width={96} height={32} className="h-8 w-auto object-contain" />
+            ) : null}
             {SHOP_NAME}
           </Link>
         </div>

@@ -60,6 +60,7 @@ Or create the user in Supabase Dashboard → Authentication → Users, then run 
 |--------|-------------|
 | `pnpm dev` | Start Next.js dev server |
 | `pnpm build` | Production build |
+| `pnpm run db:migrate` | Run Supabase migrations (link + push); used in Vercel build |
 | `pnpm start` | Run production server |
 | `pnpm lint` | Run ESLint |
 | `pnpm test` | Run Jest tests |
@@ -118,6 +119,18 @@ types/                # inventory, sales, analytics, policy
 - **Media:** Cloudinary (images and receipt PDFs).
 
 Set the same env vars in Vercel; keep `SUPABASE_SERVICE_ROLE_KEY` and `CLOUDINARY_API_SECRET` as secrets. Admin lives at `/admin`; no separate subdomain.
+
+### Running migrations on Vercel deploy
+
+Migrations run automatically during the Vercel build (see `vercel.json` → `buildCommand`). Add these **Environment Variables** in the Vercel project (Settings → Environment Variables) so the Supabase CLI can link and push:
+
+| Variable | Description | Notes |
+|----------|-------------|--------|
+| `SUPABASE_ACCESS_TOKEN` | [Personal access token](https://supabase.com/dashboard/account/tokens) | Required for CLI in CI; add as secret |
+| `SUPABASE_PROJECT_REF` | Your Supabase project ref (e.g. from the project URL) | Same ref you use with `supabase link --project-ref` locally |
+| `SUPABASE_DB_PASSWORD` | Database password for the Supabase project | Project Settings → Database → Database password |
+
+Without these, the build step `npm run db:migrate` will fail. After adding them, redeploy; each deploy will run `supabase db push` before `next build`, so new migrations in `supabase/migrations/` are applied to your hosted DB.
 
 ## Documentation
 

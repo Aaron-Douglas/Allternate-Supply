@@ -37,8 +37,12 @@ export async function createServiceRoleClient() {
 
 /** Use in static context (e.g. generateStaticParams) or for public read-only data where cookies() is not available. */
 export function createStaticSupabaseClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key) {
+    throw new Error(
+      'Missing Supabase env: set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your production environment.'
+    );
+  }
+  return createClient(url, key);
 }
